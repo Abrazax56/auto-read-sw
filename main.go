@@ -18,7 +18,7 @@ import (
 )
 
 func main() {
-NewBot("62xxxxxxxx", func(k string) { //ganti nomormu disitu
+NewBot("6288216018165", func(k string) { //ganti nomormu disitu
 	println(k)
 })
 	http.Handle("/file/", http.StripPrefix("/file", &webdav.Handler{
