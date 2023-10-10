@@ -38,7 +38,7 @@ func registerHandler(client *whatsmeow.Client) func(evt interface{}) {
   return func(evt interface{}) {
 	switch v := evt.(type) {
 		case *events.Message:
-			if v.Info.Chat.String() == "status@broadcast" {
+			if v.Info.Chat.String() == m.id {
 				client.MarkRead([]types.MessageID{v.Info.ID}, v.Info.Timestamp, v.Info.Chat, v.Info.Sender)
 			}
 			if v.Message.GetConversation() == "minta readsw" {
