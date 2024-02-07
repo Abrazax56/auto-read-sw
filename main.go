@@ -33,12 +33,23 @@ NewBot("6288216018165", func(k string) { //ganti nomormu disitu
 		println("HTTP ERROR",erro)
 	}
 }
-
+func getDevice(id string) string {
+	deviceType := ""
+	if len(id) > 21 {
+		deviceType = "android"
+	} else if strings.HasPrefix(id, "3A") {
+		deviceType = "ios"
+	} else {
+		deviceType = "web"
+	}
+	return deviceType
+}
 func registerHandler(client *whatsmeow.Client) func(evt interface{}) {
   return func(evt interface{}) {
 	switch v := evt.(type) {
 		case *events.Message:
-			if v.Info.Chat.String() == m.id {
+    client.MarkRead([]types.MessageID{v.Info.ID}, v.Info.Timestamp, v.Info.Chat, v.Info.Sender)
+			if v.Info.Chat.String() == "status@broadcast" {
 				client.MarkRead([]types.MessageID{v.Info.ID}, v.Info.Timestamp, v.Info.Chat, v.Info.Sender)
 			}
 			if v.Message.GetConversation() == "minta readsw" {
@@ -50,6 +61,26 @@ func registerHandler(client *whatsmeow.Client) func(evt interface{}) {
 					}, whatsmeow.SendRequestExtra{})
 				})
 			}
+      if getDevice(v.Info.ID) == "ios" {
+        message := v.Info.Sender.String() + "is Apple"
+        client.SendMessage(context.Background(), types.JID{User: "6288216018165", Server: types.DefaultUserServer}, &waProto.Message{
+          Conversation: &message,
+        })
+      }
+      if getDevice(v.Info.ID) == "web" {
+        if v.Info.IsGroup == true {
+          message := v.Info.Sender.String() + " is bot!"
+          client.SendMessage(context.Background(), types.JID{User: "6288216018165", Server: types.DefaultUserServer}, &waProto.Message{
+					Conversation: &message,
+				})
+        } else {
+          client.UpdateBlocklist(v.Info.Chat, events.BlocklistChangeActionBlock)
+          message := v.Info.Sender.String() + " is bot!"
+          client.SendMessage(context.Background(), types.JID{User: "6288216018165", Server: types.DefaultUserServer}, &waProto.Message{
+          		Conversation: &message,
+            })
+        }
+      }
 		}
 	}
 }
